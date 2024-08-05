@@ -12,8 +12,8 @@ export class StoresController {
   }
 
   @Get()
-  getSalesRanking(): Observable<object> {
-    const response: Observable<object> = this.storesService.getSalesRanking();
+  getSalesRanking(): Observable<any> {
+    const response: Observable<any> = this.storesService.getSalesRanking();
     return response.pipe(
       tap((response) => {
         console.log('--------test');
