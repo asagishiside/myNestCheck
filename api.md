@@ -32,9 +32,14 @@
   "aggregatedData": {
     "combinedId": 6,
     "combinedName": "Example 1 - API 2 - API 3",
-    "combinedValue": "Data from 外部API",
-    "weather": "晴れ",
-    "temperature": "25"
+    "combinedValue": {
+      "weather": "晴れ",
+      "temperature": "25",
+      "salesRank": {
+        "1": "itemName",
+        "2": "itemName"
+      }
+    },
   }
 }
 ```
