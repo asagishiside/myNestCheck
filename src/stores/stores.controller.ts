@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
-import { map, Observable, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { StoresService } from './stores.service';
+import { RankData } from './interfaces/rankData.interface';
 
 @Controller('stores')
 export class StoresController {
@@ -12,25 +13,12 @@ export class StoresController {
   }
 
   @Get()
-  getSalesRanking(): Observable<any> {
-    const response: Observable<any> = this.storesService.getSalesRanking();
-    return response.pipe(
-      tap((response) => {
-        console.log('--------test');
-        console.log(response['high_rating_trend_ranking']);
-      }),
-      map((response) => {
-        return response['high_rating_trend_ranking']['ranking_data'].map(
-          (item: { [key: string]: string }) => {
-            console.log(item);
-            const items = {
-              rank: item['rank'],
-              name: item['item_information']['name'],
-            };
-            return items;
-          },
-        );
-      }),
-    );
+  getSalesRanking(): Observable<RankData[]> {
+    return this.storesService.getSalesRanking();
+  }
+
+  @Get('result')
+  getResults(): Observable<object> {
+    return this.storesService.getResults();
   }
 }

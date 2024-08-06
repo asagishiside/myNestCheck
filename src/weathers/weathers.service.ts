@@ -18,7 +18,7 @@ export class WeathersService {
   }
 
   getWeather(city: string): Observable<AxiosResponse<any>> {
-    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${this.apiKey}`;
+    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${this.apiKey}&units=metric`;
     this.logger.debug(WeathersService.name + ' is this name');
     return this.httpService.get(apiUrl).pipe(map((response) => response.data));
   }
