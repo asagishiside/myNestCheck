@@ -2,8 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { Observable } from 'rxjs';
-import { AxiosResponse } from 'axios';
-import { map } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
+import { handleError } from 'src/stores/utils';
 
 @Injectable()
 export class WeathersService {
@@ -17,9 +17,12 @@ export class WeathersService {
     this.apiKey = this.configService.get<string>('weatherApiKey');
   }
 
-  getWeather(city: string): Observable<AxiosResponse<any>> {
+  getWeather(city: string): Observable<object> {
     const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${this.apiKey}&units=metric`;
     this.logger.debug(WeathersService.name + ' is this name');
-    return this.httpService.get(apiUrl).pipe(map((response) => response.data));
+    return this.httpService.get(apiUrl).pipe(
+      map((response) => response.data),
+      catchError(handleError(this.logger)),
+    );
   }
 }

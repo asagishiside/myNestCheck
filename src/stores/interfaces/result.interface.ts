@@ -7,6 +7,7 @@ export interface Result {
       temp: number;
       maxTemp: number;
       minTemp: number;
+      city: string;
     };
     ranking: RankData[];
 }

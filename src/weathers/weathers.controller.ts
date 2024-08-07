@@ -11,7 +11,7 @@ export class WeathersController {
     return 'This action returns all weathers';
   }
   @Get()
-  getWeather(@Query('city') city: string): Observable<any> {
+  getWeather(@Query('city') city: string): Observable<object> {
     return this.weathersService.getWeather(city);
   }
 }

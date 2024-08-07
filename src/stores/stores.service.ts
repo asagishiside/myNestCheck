@@ -6,6 +6,7 @@ import { map, catchError } from 'rxjs/operators';
 import { RankData } from './interfaces/rankData.interface';
 import { WeathersService } from 'src/weathers/weathers.service';
 import { Result } from './interfaces/result.interface';
+import { formatResult, handleError } from './utils';
 
 @Injectable()
 export class StoresService {
@@ -42,9 +43,9 @@ export class StoresService {
     );
   }
 
-  getResults(): Observable<Result> {
+  getResults(city: string = 'Tokyo'): Observable<Result> {
     return forkJoin({
-      weather: this.weathersService.getWeather('Tokyo'),
+      weather: this.weathersService.getWeather(city),
       ranking: this.getSalesRanking(),
     }).pipe(
       tap(
@@ -54,21 +55,9 @@ export class StoresService {
         },
       ),
       map(({weather, ranking}) => {
-        return {
-          weather: {
-            main: weather['weather'][0]['main'],
-            description: weather['weather'][0]['description'],
-            temp: weather['main']['temp'],
-            maxTemp: weather['main']['temp_max'],
-            minTemp: weather['main']['temp_min'],
-          },
-          ranking,
-        };
+        return formatResult(weather, ranking)
       }),
-      catchError((error) => {
-        this.logger.error(error);
-        return throwError(() => new Error('Failed to aggregate results'));
-      }),
+      catchError(handleError(this.logger)),
     );
   }
 }

@@ -1,7 +1,8 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { StoresService } from './stores.service';
 import { RankData } from './interfaces/rankData.interface';
+import { GetResultDto } from './dto/getResultDto';
 
 @Controller('stores')
 export class StoresController {
@@ -20,5 +21,10 @@ export class StoresController {
   @Get('result')
   getResults(): Observable<object> {
     return this.storesService.getResults();
+  }
+
+  @Post('result')
+  getResult(@Body() body: GetResultDto): Observable<object> {
+    return this.storesService.getResults(body.city);
   }
 }
