@@ -51,7 +51,8 @@
 
 ```json
 {
-  "message": "An error occurred while processing the request."
+  "statusCode":500,
+  "message":"Internal server error"
 }
 ```
 
@@ -85,7 +86,14 @@
       "minTemp":32.59},
   },
   "ranking": [
-
+    {
+      "rank":1,
+      "name":"Item Name"
+    },
+    {
+      "rank":2,
+      "name":"Item Name"
+    },
   ]
 }
 ```
@@ -100,7 +108,8 @@
 
 ```json
 {
-  "message": "An error occurred while processing the request."
+  "statusCode":500,
+  "message":"Internal server error"
 }
 ```
 
