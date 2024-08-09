@@ -1,13 +1,16 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
-import { Observable } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { handleError } from 'src/stores/utils';
+import { handleError } from '../stores/utils';
+import { formatWeathers } from '../stores/utils';
+import { Weathers } from '../stores/interfaces/weathers.interface';
 
 @Injectable()
 export class WeathersService {
   private readonly apiKey: string;
+  private readonly apiUrl: string;
   private readonly logger = new Logger(WeathersService.name);
 
   constructor(
@@ -15,14 +18,36 @@ export class WeathersService {
     private readonly configService: ConfigService,
   ) {
     this.apiKey = this.configService.get<string>('weatherApiKey');
+    this.apiUrl = this.configService.get<string>('weatherApiUrl');
   }
 
   getWeather(city: string): Observable<object> {
-    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${this.apiKey}&units=metric`;
-    this.logger.debug(WeathersService.name + ' is this name');
+    if (!this.apiKey) {
+      throw new HttpException('お天気情報のAPIキーを設定してください。', HttpStatus.BAD_REQUEST);
+    }
+    const apiUrl = `${this.apiUrl}?q=${city}&appid=${this.apiKey}&units=metric`;
+    // this.logger.debug(WeathersService.name + ' is this name');
     return this.httpService.get(apiUrl).pipe(
       map((response) => response.data),
       catchError(handleError(this.logger)),
+    );
+  }
+
+  getAllWeather(): Observable<Weathers> {
+    if (!this.apiKey) {
+      throw new HttpException('お天気情報のAPIキーを設定してください。', HttpStatus.BAD_REQUEST);
+    }
+    const cities = ['Tokyo', 'Osaka', 'Sapporo', 'Nagoya', 'Fukuoka'];
+    const apiRequests = cities.map(city => {
+      const apiUrl = `${this.apiUrl}?q=${city}&appid=${this.apiKey}&units=metric`;
+      return this.httpService.get(apiUrl).pipe(
+        map((response) => response.data),
+        catchError(handleError(this.logger)),
+      )
+    });
+    return forkJoin(apiRequests).pipe(
+      map(
+        weathers => {console.log(weathers); return formatWeathers(weathers)})
     );
   }
 }

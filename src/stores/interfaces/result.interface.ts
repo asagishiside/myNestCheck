@@ -1,13 +1,7 @@
 import { RankData } from "./rankData.interface";
+import { Weathers } from "./weathers.interface";
 
 export interface Result {
-    weather: {
-      main: string;
-      description: string;
-      temp: number;
-      maxTemp: number;
-      minTemp: number;
-      city: string;
-    };
+    weathers: Weathers;
     ranking: RankData[];
 }

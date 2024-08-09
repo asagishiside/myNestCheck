@@ -1,10 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
-import { forkJoin, Observable, throwError, tap } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { forkJoin, Observable } from 'rxjs';
+import { map, tap, catchError } from 'rxjs/operators';
 import { RankData } from './interfaces/rankData.interface';
-import { WeathersService } from 'src/weathers/weathers.service';
+import { WeathersService } from '../weathers/weathers.service';
 import { Result } from './interfaces/result.interface';
 import { formatResult, handleError } from './utils';
 
@@ -24,6 +24,9 @@ export class StoresService {
   }
 
   getSalesRanking(): Observable<RankData[]> {
+    if (!this.apiKey) {
+      throw new HttpException('商品ランキングのAPIキーを設定してください。', HttpStatus.BAD_REQUEST);
+    }
     const apiUrl = `${this.apiUrl}?appid=${this.apiKey}`;
     return this.httpService.get(apiUrl).pipe(
       map((response) => {
@@ -36,26 +39,23 @@ export class StoresService {
           },
         );
       }),
-      catchError((error) => {
-        this.logger.error(error);
-        return throwError(() => new Error('Failed to fetch store data'));
-      }),
+      catchError(handleError(this.logger)),
     );
   }
 
-  getResults(city: string = 'Tokyo'): Observable<Result> {
+  getResults(): Observable<Result> {
     return forkJoin({
-      weather: this.weathersService.getWeather(city),
+      weathers: this.weathersService.getAllWeather(),
       ranking: this.getSalesRanking(),
     }).pipe(
-      tap(
-        ({weather, ranking}) => {
-          this.logger.debug('Weather data: ' + JSON.stringify(weather));
-          this.logger.debug('Ranking data: ' + JSON.stringify(ranking));
-        },
-      ),
-      map(({weather, ranking}) => {
-        return formatResult(weather, ranking)
+      // tap(
+      //   ({weathers, ranking}) => {
+      //     this.logger.debug('Weather data: ' + JSON.stringify(weathers));
+      //     this.logger.debug('Ranking data: ' + JSON.stringify(ranking));
+      //   },
+      // ),
+      map(({weathers, ranking}) => {
+        return formatResult(weathers, ranking)
       }),
       catchError(handleError(this.logger)),
     );

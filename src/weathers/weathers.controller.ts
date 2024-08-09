@@ -1,6 +1,8 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Post, Query, Body } from '@nestjs/common';
 import { WeathersService } from './weathers.service';
 import { Observable } from 'rxjs';
+import { Weathers } from '../stores/interfaces/weathers.interface';
+import { GetWeatherDto } from 'src/stores/dto/getWeatherDto';
 
 @Controller('weathers')
 export class WeathersController {
@@ -8,10 +10,20 @@ export class WeathersController {
 
   @Get('test')
   findAll(): string {
-    return 'This action returns all weathers';
+    return 'This action returns weathers test';
   }
   @Get()
   getWeather(@Query('city') city: string): Observable<object> {
     return this.weathersService.getWeather(city);
+  }
+
+  @Post()
+  getResult(@Body() body: GetWeatherDto): Observable<object> {
+    return this.weathersService.getWeather(body.city);
+  }
+
+  @Get('all')
+  getAllWeather(): Observable<Weathers> {
+    return this.weathersService.getAllWeather();
   }
 }
