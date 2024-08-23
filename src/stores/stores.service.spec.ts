@@ -30,7 +30,7 @@ describe('StoresService', () => {
             get: jest.fn((key: string) => {
               switch (key) {
                 case 'yahooClientId':
-                  return 'test-api-key';
+                  return 'testapikey';
                 case 'yahooApiUrl':
                   return 'https://test-api-url.com';
               }
