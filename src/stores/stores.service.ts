@@ -25,7 +25,10 @@ export class StoresService {
 
   getSalesRanking(): Observable<RankData[]> {
     if (!this.apiKey) {
-      throw new HttpException('商品ランキングのAPIキーを設定してください。', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'API key is not provided',
+        HttpStatus.BAD_REQUEST,
+      );
     }
     const apiUrl = `${this.apiUrl}?appid=${this.apiKey}`;
     return this.httpService.get(apiUrl).pipe(
@@ -35,7 +38,7 @@ export class StoresService {
             return {
               rank: item['rank'],
               name: item['item_information']['name'],
-            }
+            };
           },
         );
       }),
@@ -54,8 +57,8 @@ export class StoresService {
       //     this.logger.debug('Ranking data: ' + JSON.stringify(ranking));
       //   },
       // ),
-      map(({weathers, ranking}) => {
-        return formatResult(weathers, ranking)
+      map(({ weathers, ranking }) => {
+        return formatResult(weathers, ranking);
       }),
       catchError(handleError(this.logger)),
     );

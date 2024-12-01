@@ -23,7 +23,10 @@ export class WeathersService {
 
   getWeather(city: string): Observable<object> {
     if (!this.apiKey) {
-      throw new HttpException('お天気情報のAPIキーを設定してください。', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'API key is not provided',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
     const apiUrl = `${this.apiUrl}?q=${city}&appid=${this.apiKey}&units=metric`;
     // this.logger.debug(WeathersService.name + ' is this name');
@@ -35,19 +38,24 @@ export class WeathersService {
 
   getAllWeather(): Observable<Weathers> {
     if (!this.apiKey) {
-      throw new HttpException('お天気情報のAPIキーを設定してください。', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'API key is not provided',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
     const cities = ['Tokyo', 'Osaka', 'Sapporo', 'Nagoya', 'Fukuoka'];
-    const apiRequests = cities.map(city => {
+    const apiRequests = cities.map((city) => {
       const apiUrl = `${this.apiUrl}?q=${city}&appid=${this.apiKey}&units=metric`;
       return this.httpService.get(apiUrl).pipe(
         map((response) => response.data),
         catchError(handleError(this.logger)),
-      )
+      );
     });
     return forkJoin(apiRequests).pipe(
-      map(
-        weathers => {console.log(weathers); return formatWeathers(weathers)})
+      map((weathers) => {
+        console.log(weathers);
+        return formatWeathers(weathers);
+      }),
     );
   }
 }
