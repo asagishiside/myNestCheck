@@ -2,7 +2,7 @@ import { Controller, Get, Post, Query, Body } from '@nestjs/common';
 import { WeathersService } from './weathers.service';
 import { Observable } from 'rxjs';
 import { Weathers } from '../stores/interfaces/weathers.interface';
-import { GetWeatherDto } from 'src/stores/dto/getWeatherDto';
+import { GetWeatherDto } from '../stores/dto/getWeatherDto';
 
 @Controller('weathers')
 export class WeathersController {

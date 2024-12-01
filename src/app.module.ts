@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { WeathersController } from './weathers/weathers.controller';
 import { ConfigModule } from '@nestjs/config';
 import configration from 'config/configration';
 import { HttpModule } from '@nestjs/axios';
-import { WeathersService } from './weathers/weathers.service';
-import { StoresController } from './stores/stores.controller';
-import { StoresService } from './stores/stores.service';
+import { StoresModule } from './stores/stores.module';
+import { WeathersModule } from './weathers/weathers.module';
+import { GlobalModule } from './global/global.module';
 
 @Module({
   imports: [
@@ -16,8 +15,11 @@ import { StoresService } from './stores/stores.service';
       isGlobal: true,
     }),
     HttpModule,
+    StoresModule,
+    WeathersModule,
+    GlobalModule,
   ],
-  controllers: [AppController, WeathersController, StoresController],
-  providers: [AppService, WeathersService, StoresService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
